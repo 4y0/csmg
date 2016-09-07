@@ -1,14 +1,14 @@
 var cache_snippets = [];
 
 function getCodeSnippets(callback){
-	chrome.storage.local.get('snippets', function(store){
+	chrome.storage.local.get(['snippets','last_run_index'], function(store){
 
 		if(!store['snippets']){
 			store['snippets'] = [];
 			chrome.storage.local.set({'snippets':store['snippets']});
 		}
 
-		callback(store['snippets']);
+		callback(store['snippets'], store['last_run_index']);
 	});
 }
 
@@ -64,17 +64,29 @@ function displaySnippet(snippet_index){
 }
 
 function doGetSnippets(is_init){
-	getCodeSnippets(  function(snippets){
+	getCodeSnippets(  function(snippets, last_run_index){
 		//alert(snippets.length);
 		cache_snippets = snippets;
 		renderSnippets('#snippets', snippets);
-		if(typeof is_init != 'undefined' && is_init != ''){
+		if(typeof is_init != 'undefined' && is_init != ''){ 
 			displaySnippet(is_init);
 			$("#snippets").val(is_init);
+		}
+		else if(typeof last_run_index != 'undefined' && last_run_index != ''){
+			displaySnippet(last_run_index);
+			$("#snippets").val(last_run_index);
 		}
 	});
 }
 
+
+function saveLastRunIndex(index){
+
+	if(typeof index != 'undefined' && index != '')
+	{
+		chrome.storage.local.set({'last_run_index':index});
+	}
+}
 
 
 $(document).ready( function (e){
@@ -88,7 +100,10 @@ $(document).ready( function (e){
 				var tab  = tabs[0];
 				var code = $('#code').val(); 
 				if(code && code != "")
-				chrome.tabs.executeScript(tab.id, {code:code});
+				{
+					chrome.tabs.executeScript(tab.id, {code:code});
+					saveLastRunIndex( $("#snippet_index").val() );
+				}
 			}
 
 		});
