@@ -1,4 +1,5 @@
 var cache_snippets = [];
+var ace_editor_instance = null;
 
 function getCodeSnippets(callback){
 	chrome.storage.local.get(['snippets','last_run_index'], function(store){
@@ -49,14 +50,16 @@ function displaySnippet(snippet_index){
 	var snippet = cache_snippets[snippet_index];
 
 	if(snippet){
-		$('#code').html(snippet.code);
-		$('#code').val(snippet.code);
+		ace_editor_instance.setValue(snippet.code);
+		//$('#code').html(snippet.code);
+		//$('#code').val(snippet.code);
 		$('#snippet_title').val(snippet.title);
 		$('#snippet_index').val(snippet_index);
 	}
 	else{
-		$('#code').html("");
-		$('#code').val("");
+		ace_editor_instance.setValue('');
+		//$('#code').html("");
+		//$('#code').val("");
 		$('#snippet_title').val("");
 		$('#snippet_index').val("");
 	}
@@ -91,14 +94,29 @@ function saveLastRunIndex(index){
 
 $(document).ready( function (e){
 
-	doGetSnippets();
+	/*
+	=====================================================================
+	Init Ace Editor
+	=====================================================================
+	*/
+
+	ace_editor_instance = ace.edit("code");
+    ace_editor_instance.setTheme("ace/theme/monokai");
+    ace_editor_instance.getSession().setMode("ace/mode/javascript");
+    ace_editor_instance.setFontSize('10px');
+
+    /*
+    ======================================================================
+    */
+
+    doGetSnippets();
 
 	$(".run-script").click(  function(e){
 		chrome.tabs.query({active:true}, function (tabs){
 			
 			if (tabs && tabs.length){
 				var tab  = tabs[0];
-				var code = $('#code').val(); 
+				var code = ace_editor_instance.getValue(); //$('#code').val(); 
 				if(code && code != "")
 				{
 					chrome.tabs.executeScript(tab.id, {code:code});
@@ -136,7 +154,7 @@ $(document).ready( function (e){
 
 		//var codeSnippets = [];
 		var snippet_index = $("#snippet_index").val();
-		var code = $('#code').val(); 
+		var code = ace_editor_instance.getValue(); //$('#code').val(); 
 		var snippet_title = $('#snippet_title').val() || 'Untitled - ' + new Date().toString();
 		if(code && code != ""){
 

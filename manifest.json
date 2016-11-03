@@ -4,9 +4,13 @@
   "name": "Content Script Manager",
   "description": "Simple script snippet manager for chrome",
   "version": "1.0", 
+  "background": {
+    "scripts": ["bg.js"]
+  },
    "browser_action": { 
     "default_popup": "popup.html"
   }, 
+  "devtools_page": "popup.html",
   "permissions": [
     "activeTab", 
     "tabs",
