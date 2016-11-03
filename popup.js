@@ -51,6 +51,7 @@ function displaySnippet(snippet_index){
 
 	if(snippet){
 		ace_editor_instance.setValue(snippet.code);
+		ace_editor_instance.gotoLine(1);
 		//$('#code').html(snippet.code);
 		//$('#code').val(snippet.code);
 		$('#snippet_title').val(snippet.title);
