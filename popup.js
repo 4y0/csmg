@@ -120,7 +120,7 @@ $(document).ready( function (e){
 				var code = ace_editor_instance.getValue(); //$('#code').val(); 
 				if(code && code != "")
 				{
-					chrome.tabs.executeScript(tab.id, {code:code});
+					chrome.tabs.executeScript(tab.id, {code:code, allFrames:true});
 					saveLastRunIndex( $("#snippet_index").val() );
 				}
 			}
